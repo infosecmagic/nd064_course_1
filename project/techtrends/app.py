@@ -1,13 +1,19 @@
 import sqlite3
+import logging
 
 from flask import Flask, jsonify, json, render_template, request, url_for, redirect, flash
+from flask.helpers import make_response
 from werkzeug.exceptions import abort
+
+db_connection_count = 0
 
 # Function to get a database connection.
 # This function connects to database with the name `database.db`
 def get_db_connection():
+    global db_connection_count
     connection = sqlite3.connect('database.db')
     connection.row_factory = sqlite3.Row
+    db_connection_count += 1
     return connection
 
 # Function to get a post using its ID
@@ -36,13 +42,16 @@ def index():
 def post(post_id):
     post = get_post(post_id)
     if post is None:
-      return render_template('404.html'), 404
+        app.logger.info("Non-existent page tried to be fetched")
+        return render_template('404.html'), 404
     else:
-      return render_template('post.html', post=post)
+        app.logger.info("Article \"%s\" retrieved!", post['title'])
+        return render_template('post.html', post=post)
 
 # Define the About Us page
 @app.route('/about')
 def about():
+    app.logger.info("About page retrieved")
     return render_template('about.html')
 
 # Define the post creation functionality 
@@ -60,11 +69,43 @@ def create():
                          (title, content))
             connection.commit()
             connection.close()
+            app.logger.info("Article \"%s\" created!", title)
 
             return redirect(url_for('index'))
 
     return render_template('create.html')
 
+# Define the healthcheck endpoint
+@app.route('/healthz')
+def healthcheck():
+    resp = make_response(
+        json.jsonify(
+            {"result":"OK - healthy"}
+        ),
+        200
+    )
+    return resp
+
+# Define the metrics endpoint
+@app.route('/metrics')
+def metrics_check():
+    connection = get_db_connection()
+    cursor = connection.execute('SELECT COUNT(*) FROM posts')
+    row = cursor.fetchone()
+    post_count = row[0]
+    connection.close()
+
+    resp = make_response(
+        json.jsonify(
+            {"db_connection_count":db_connection_count,
+            "post_count":post_count
+            }
+        ),
+        200
+    )
+    return resp
+
 # start the application on port 3111
 if __name__ == "__main__":
-   app.run(host='0.0.0.0', port='3111')
+    logging.basicConfig(level=logging.DEBUG, format="%(levelname)s %(asctime)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+    app.run(host='0.0.0.0', port='3111')
