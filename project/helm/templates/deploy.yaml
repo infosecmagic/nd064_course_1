@@ -4,7 +4,7 @@ metadata:
   labels:
     app: techtrends
   name: techtrends
-  namespace: {{ .Values.namespace.name }} 
+  namespace: {{ .Values.namespace.name | quote }} 
 spec:
   replicas: {{ .Values.replicaCount }} 
   selector:
@@ -19,8 +19,11 @@ spec:
       - image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: techtrends
-        containerPort: {{ .Values.containerPort }}
+        ports:
+{{ toYaml .Values.ports | indent 12 }}
         resources:
 {{ toYaml .Values.resources | indent 12 }}
-{{ toYaml .Values.livenessProbe | indent 12}}
-{{ toYaml .Values.readinessProbe | indent 12}}
+        livenessProbe:
+{{ toYaml .Values.livenessProbe | indent 12 }}
+        readinessProbe:
+{{ toYaml .Values.readinessProbe | indent 12 }}
