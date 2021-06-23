@@ -1,5 +1,6 @@
 import sqlite3
 import logging
+import sys
 
 from flask import Flask, jsonify, json, render_template, request, url_for, redirect, flash
 from flask.helpers import make_response
@@ -106,6 +107,18 @@ def metrics_check():
     return resp
 
 # start the application on port 3111
+# credit to project reviewer and to course mentor Shivanand T for hints
+# on logging (https://knowledge.udacity.com/questions/612353)
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG, format="%(levelname)s %(asctime)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+    logger = logging.getLogger()
+    handler_stdout = logging.StreamHandler(sys.stdout)
+    handler_stdout.setLevel(logging.DEBUG)
+    handler_stderr = logging.StreamHandler(sys.stderr)
+    handler_stderr.setLevel(logging.ERROR)
+    handlers = [handler_stdout, handler_stderr]
+    format_output = "%(levelname)s %(asctime)s %(message)s"
+    datefmt_output = "%Y-%m-%d %H:%M:%S"
+    logging.basicConfig(format=format_output, datefmt=datefmt_output, 
+        handlers=handlers, level=logging.DEBUG)
+    
     app.run(host='0.0.0.0', port='3111')

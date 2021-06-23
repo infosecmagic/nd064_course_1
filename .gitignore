@@ -1,1 +1,3 @@
 .vagrant
+project/.vscode/
+project/techtrends/database.db
