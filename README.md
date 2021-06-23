@@ -1,1 +1,2 @@
 # nd064_C1
+Completed project (`/project` folder) for "Cloud Native Fundamentals" course within the [Cloud Native Application Architecture nanodegree](https://www.udacity.com/course/cloud-native-application-architecture-nanodegree--nd064) from Udacity.
