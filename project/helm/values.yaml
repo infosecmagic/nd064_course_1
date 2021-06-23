@@ -8,7 +8,7 @@ service:
   type: ClusterIP
 
 image:
-  repository: https://github.com/infosecmagic/nd064_course_1/tree/main/project
+  repository: github.com/infosecmagic/nd064_course_1/
   tag: latest
   pullPolicy: IfNotPresent
 
