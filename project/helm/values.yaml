@@ -12,7 +12,11 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
   ports:
-  - containerPort: 3111
+  - name: containerPort
+    port: 3111
+    protocol: TCP
+    targetPort: 8080
+    nodePort: 30007
 
 replicaCount: 1
 
