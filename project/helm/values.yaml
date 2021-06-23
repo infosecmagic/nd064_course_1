@@ -11,12 +11,6 @@ image:
   repository: techtrends
   tag: latest
   pullPolicy: IfNotPresent
-  ports:
-  - name: containerPort
-    port: 3111
-    protocol: TCP
-    targetPort: 8080
-    nodePort: 30007
 
 replicaCount: 1
 
@@ -27,6 +21,8 @@ resources:
   limits:
     cpu: 500m
     memory: 128Mi
+
+containerPort: 3111
 
 livenessProbe:
   httpGet:
